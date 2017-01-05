@@ -21,6 +21,26 @@ function_mappings = {
 }
 
 
+def my_reduce(func, iterables):
+    """Apply function of two arguments cumulatively to iterables
+
+    args:
+        func: any user-defined function
+        iterables: any iterable data type
+    returns:
+        result
+    """
+
+    first = iterables[0]
+    second = iterables[1]
+
+    result = func(first, second)
+
+    for new_num in iterables[2:]:
+        result = func(result, new_num)
+    return result
+
+
 def compute(math_operator, numbers):
     """Calculate function with variable args.
 
@@ -31,7 +51,7 @@ def compute(math_operator, numbers):
     returns:
         The computed math function on the numeric list
     """
-    return reduce(lambda x, y: math_operator(int(x), int(y)), numbers)
+    return my_reduce(lambda x, y: math_operator(int(x), int(y)), numbers)
 
 
 # Perform calculations until the user types 'q'
@@ -50,7 +70,7 @@ while True:
     elif func not in function_mappings:
         print "Please input a valid operator"
         continue
-    
+
     # Print out error messages for incorrect number of operands
     if func in ["+", "-", "*", "/"]:
         if len(tokens) < 3:
@@ -67,7 +87,8 @@ while True:
 
     try:
         # Run compute function starting at index 1
-        print compute(function_mappings[func], tokens[1:])
+        result = compute(function_mappings[func], tokens[1:])
+        print "Result = {:.2f}".format(result)
 
     # Expect TypeError when non-integers are entered after index 1
     # Expect ValueError when math operation cannot be completed (i.e. dividing by 0)
